@@ -106,10 +106,7 @@ export function convertFromVersion0(state, newfile) {
             let ihandle = phandle.createDataSet("use_mito_default", "Uint8", []);
             ihandle.write(Number(mparams.use_mito_default));
         }
-        {
-            let ihandle = phandle.createDataSet("mito_prefix", "String", []);
-            ihandle.write(mparams.mito_prefix);
-        }
+        quick_write_string(phandle, "mito_prefix", mparams.mito_prefix);
 
         let tparams = state.quality_control_thresholds.parameters;
         {
@@ -293,4 +290,105 @@ export function convertFromVersion0(state, newfile) {
             dhandle.write(clusters);
         }
     }
+
+    // SNN graph clustering.
+    {
+        let ghandle = fhandle.createGroup("snn_graph_cluster");
+
+        let phandle = ghandle.createGroup("parameters");
+        {
+            let find_params = state.snn_find_neighbors.parameters;
+            {
+                let dhandle = phandle.createDataSet("k", "Int32", []);
+                dhandle.write(find_params.k);
+            }
+
+            let build_params = state.snn_build_graph.parameters;
+            quick_write_string(phandle, "scheme", ["rank", "number", "jaccard"][build_params.scheme]);
+
+            let cluster_params = state.snn_cluster_graph.parameters;
+            {
+                let dhandle = phandle.createDataSet("resolution", "Float64", []);
+                dhandle.write(cluster_params.resolution);
+            }
+        }
+
+        let chandle = ghandle.createGroup("contents");
+        let contents = recoverTypedArrays(state.snn_cluster_graph.contents);
+        {
+            let clusters = contents.clusters;
+            let dhandle = chandle.createDataSet("clusters", "Int32", [clusters.length]);
+            dhandle.write(clusters);
+        }
+    }
+
+    // Choose clustering.
+    {
+        let ghandle = fhandle.createGroup("choose_clustering");
+        let phandle = ghandle.createGroup("parameters");
+        quick_write_string(phandle, "method", state.choose_clustering.parameters.method);
+    }
+
+    // Marker detection.
+    {
+        let ghandle = fhandle.createGroup("marker_detection");
+
+        let chandle = ghandle.createGroup("contents");
+        let rhandle = chandle.createGroup("results");
+        let results = state.marker_detection.contents;
+        for (const [index, val] of results.entries()) {
+            let ihandle = rhandle.createGroup(String(index));
+            let current = recoverTypedArrays(val);
+
+            for (const x of [ "means", "detected" ]) {
+                let y = current[x];
+                let dhandle = ihandle.createDataSet(x, "Float64", [y.length]);
+                dhandle.write(y);
+            }
+
+            for (const i of [ "lfc", "delta_detected", "auc", "cohen" ]) {
+                let rankings = current[i];
+                let rhandle = ihandle.createGroup(i);
+
+                for (const j of [ "min", "mean", "min-rank" ]) {
+                    let y = rankings[j];
+                    let dhandle = rhandle.createDataSet(j, "Float64", [y.length]);
+                    dhandle.write(y);
+                }
+            }
+        }
+    }
+
+    // Custom markers.
+    {
+        let ghandle = fhandle.createGroup("custom_marker_management");
+
+        let phandle = ghandle.createGroup("parameters");
+        let shandle = phandle.createGroup("selections");
+        let params = recoverTypedArrays(state.custom_marker_management.parameters);
+        for (const [key, val] of Object.entries(params.selections)) {
+            let dhandle = shandle.createDataSet(String(key), "Uint8", [val.length]);
+            dhandle.write(val);
+        }
+
+        let chandle = ghandle.createGroup("contents");
+        let rhandle = chandle.createGroup("results");
+        for (const [key, val] of Object.entries(state.custom_marker_management.contents.results)) {
+            let ihandle = chandle.createGroup(String(key));
+            let current = recoverTypedArrays(val);
+
+            for (const x of [ "means", "detected" ]) {
+                let y = current[x];
+                let dhandle = ihandle.createDataSet(x, "Float64", [y.length]);
+                dhandle.write(y);
+            }
+
+            for (const i of [ "lfc", "delta_detected", "auc", "cohen" ]) {
+                let y = current[i]["mean"];
+                let dhandle = rhandle.createDataSet(j, "Float64", [y.length]);
+                dhandle.write(y);
+            }
+        }
+    }
+
 }
