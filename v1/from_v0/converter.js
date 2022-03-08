@@ -374,7 +374,7 @@ export function convertFromVersion0(state, newfile) {
         let chandle = ghandle.createGroup("contents");
         let rhandle = chandle.createGroup("results");
         for (const [key, val] of Object.entries(state.custom_marker_management.contents.results)) {
-            let ihandle = chandle.createGroup(String(key));
+            let ihandle = rhandle.createGroup(String(key));
             let current = recoverTypedArrays(val);
 
             for (const x of [ "means", "detected" ]) {
@@ -385,7 +385,7 @@ export function convertFromVersion0(state, newfile) {
 
             for (const i of [ "lfc", "delta_detected", "auc", "cohen" ]) {
                 let y = current[i]["mean"];
-                let dhandle = rhandle.createDataSet(j, "Float64", [y.length]);
+                let dhandle = ihandle.createDataSet(i, "Float64", [y.length]);
                 dhandle.write(y);
             }
         }
