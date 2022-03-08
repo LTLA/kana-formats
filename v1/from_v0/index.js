@@ -23,7 +23,9 @@ function bufferToNumber(buffer) {
     return output;
 }
 
-let path = "../../v0/examples/zeisel_mtx_20220306.kana";
+let args = process.argv;
+let path = args[args.length - 1];
+console.log(path);
 const data = fs.readFileSync(path);
 let buffer = data.buffer;
 
