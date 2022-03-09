@@ -88,7 +88,7 @@ export function convertFromVersion0(state, newfile) {
 
         // Only storing the number of cells and genes. If we want the 
         // annotations, we might as well just read from the source.
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let dset = chandle.createDataSet("dimensions", "Int32", [2]);
         let contents = state.inputs.contents;
         let ngenes = Object.values(contents.genes)[0].length;
@@ -115,7 +115,7 @@ export function convertFromVersion0(state, newfile) {
         }
 
         // Saving all the contents.
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
 
         let mhandle = chandle.createGroup("metrics");
         let mcontents = recoverTypedArrays(state.quality_control_metrics.contents);
@@ -148,7 +148,11 @@ export function convertFromVersion0(state, newfile) {
     }
 
     // Normalization just needs a group but it doesn't actually have any information right now.
-    fhandle.createGroup("normalization");
+    {
+        let ghandle = fhandle.createGroup("normalization");
+        ghandle.createGroup("parameters");
+        ghandle.createGroup("results");
+    }
 
     // Feature selection.
     {
@@ -160,7 +164,7 @@ export function convertFromVersion0(state, newfile) {
             dhandle.write(state.feature_selection.parameters.span);
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.feature_selection.contents);
         for (const x of [ "means", "vars", "fitted", "resids" ]) {
             let y = contents[x];
@@ -180,7 +184,7 @@ export function convertFromVersion0(state, newfile) {
             dhandle.write(params[x]);
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.pca.contents);
 
         let ve = contents.var_exp;
@@ -201,6 +205,8 @@ export function convertFromVersion0(state, newfile) {
         let params = state.pca.parameters;
         let dhandle = phandle.createDataSet("approximate", "Uint8", []);
         dhandle.write(params.approximate);
+
+        ghandle.createGroup("results");
     }
 
     // t-SNE details.
@@ -222,7 +228,7 @@ export function convertFromVersion0(state, newfile) {
             dhandle.write(params.animate);
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.tsne.contents);
         {
             let dhandle = chandle.createDataSet("x", "Float64", [contents.x.length]);
@@ -258,7 +264,7 @@ export function convertFromVersion0(state, newfile) {
             dhandle.write(params.animate);
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.umap.contents);
         {
             let dhandle = chandle.createDataSet("x", "Float64", [contents.x.length]);
@@ -272,26 +278,28 @@ export function convertFromVersion0(state, newfile) {
     }
 
     // K-means.
-    if ("kmeans_cluster" in state) {
+    {
         let ghandle = fhandle.createGroup("kmeans_cluster");
-
         let phandle = ghandle.createGroup("parameters");
-        let params = state.kmeans_cluster.parameters;
-        {
-            let dhandle = phandle.createDataSet("k", "Int32", []);
+
+        let dhandle = phandle.createDataSet("k", "Int32", []);
+        if ("kmeans_cluster" in state) {
+            let params = state.kmeans_cluster.parameters;
             dhandle.write(params.k);
+        } else {
+            dhandle.write(10);
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.kmeans_cluster.contents);
-        {
+        if ("kmeans_cluster" in state) {
             let clusters = contents.clusters;
             let dhandle = chandle.createDataSet("clusters", "Int32", [clusters.length]);
             dhandle.write(clusters);
         }
     }
 
-    // SNN graph clustering.
+    // SNN graph clustering. This consolidates details from several steps in v0.
     {
         let ghandle = fhandle.createGroup("snn_graph_cluster");
 
@@ -313,7 +321,7 @@ export function convertFromVersion0(state, newfile) {
             }
         }
 
-        let chandle = ghandle.createGroup("contents");
+        let chandle = ghandle.createGroup("results");
         let contents = recoverTypedArrays(state.snn_cluster_graph.contents);
         {
             let clusters = contents.clusters;
@@ -333,8 +341,8 @@ export function convertFromVersion0(state, newfile) {
     {
         let ghandle = fhandle.createGroup("marker_detection");
 
-        let chandle = ghandle.createGroup("contents");
-        let rhandle = chandle.createGroup("results");
+        let chandle = ghandle.createGroup("results");
+        let rhandle = chandle.createGroup("clusters");
         let results = state.marker_detection.contents;
         for (const [index, val] of results.entries()) {
             let ihandle = rhandle.createGroup(String(index));
@@ -365,14 +373,14 @@ export function convertFromVersion0(state, newfile) {
 
         let phandle = ghandle.createGroup("parameters");
         let shandle = phandle.createGroup("selections");
-        let params = recoverTypedArrays(state.custom_marker_management.parameters);
+        let params = state.custom_marker_management.parameters;
         for (const [key, val] of Object.entries(params.selections)) {
-            let dhandle = shandle.createDataSet(String(key), "Uint8", [val.length]);
+            let dhandle = shandle.createDataSet(String(key), "Int32", [val.length]);
             dhandle.write(val);
         }
 
-        let chandle = ghandle.createGroup("contents");
-        let rhandle = chandle.createGroup("results");
+        let chandle = ghandle.createGroup("results");
+        let rhandle = chandle.createGroup("selections");
         for (const [key, val] of Object.entries(state.custom_marker_management.contents.results)) {
             let ihandle = rhandle.createGroup(String(key));
             let current = recoverTypedArrays(val);
