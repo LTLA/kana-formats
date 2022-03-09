@@ -87,12 +87,20 @@ export function convertFromVersion0(state, newfile) {
         }
 
         // Only storing the number of cells and genes. If we want the 
-        // annotations, we might as well just read from the source.
+        // barcode annotations, we might as well just read from the source.
         let chandle = ghandle.createGroup("results");
         let dset = chandle.createDataSet("dimensions", "Int32", [2]);
         let contents = state.inputs.contents;
         let ngenes = Object.values(contents.genes)[0].length;
         dset.write([ngenes, contents.num_cells]);
+
+        // Unfortunately the v0 didn't contain enough information to 
+        // easily reproduce the permutations, so we just save the already-permuted genes here.
+        let gehandle = chandle.createGroup("genes");
+        for (const [key, val] of Object.entries(contents.genes)) {
+            let dhandle = gehandle.createDataSet(key, "String", [val.length]);
+            dhandle.write(val);
+        }
     }
 
     // Storing quality control. This consolidates elements from 

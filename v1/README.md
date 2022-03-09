@@ -69,6 +69,10 @@ Otherwise, a "dataset" refers to a non-scalar HDF5 dataset, which is assumed to 
 - `permutation`: an integer dataset of length equal to the number of cells,
   describing the permutation to be applied to the per-gene results (see below) to recover the original row order.
 
+For transition purposes, `permutation` may be absent, replaced by a `genes` group.
+Each child group is a string dataset of length equal to the number of genes, containing gene-level annotations, most typically IDs.
+This option is only provided for the sake of the version 0 converters and should not be used otherwise.
+
 ### Group `quality_control`
 
 `parameters` will contain:
