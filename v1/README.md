@@ -227,7 +227,7 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
   - `cohen`: same as `lfc`, but for Cohen's d.
   - `auc`: same as `lfc`, but for the AUCs.
 
-### Group `custom_selection_markers`
+### Group `custom_selections`
 
 `parameters` will contain:
 
@@ -238,7 +238,7 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
 
 `results` will contain:
 
-- `selections`: a group containing the marker results for each selection after a comparison to a group containing all other cells.
+- `markers`: a group containing the marker results for each selection after a comparison to a group containing all other cells.
   Each child is named after its selection and is a group containing:
   - `means`: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the selection.
   - `detected`: a float dataset of length equal to the number of genes, containing the proportion of cells with detected expression of each gene in the selection.
