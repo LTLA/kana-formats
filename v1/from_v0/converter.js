@@ -76,13 +76,15 @@ export function convertFromVersion0(state, newfile) {
             let xhandle = fihandle.createGroup(String(index));
             quick_write_string(xhandle, "type", info.type);
             quick_write_string(xhandle, "name", info.name);
-            {
+
+            if (info.buffer instanceof Object) { // i.e., embedded
                 let ihandle = xhandle.createDataSet("offset", "Uint32", []);
                 ihandle.write(info.buffer.offset);
-            }
-            {
-                let ihandle = xhandle.createDataSet("size", "Uint32", []);
-                ihandle.write(info.buffer.size);
+                let ihandle2 = xhandle.createDataSet("size", "Uint32", []);
+                ihandle2.write(info.buffer.size);
+            } else { // i.e. KanaDB links.
+                let ihandle = xhandle.createDataSet("id", "String", []);
+                ihandle.write(info.buffer);
             }
         }
 
