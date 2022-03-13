@@ -166,7 +166,7 @@ This option is only provided for the sake of the version 0 converters and should
 - `x`: a float dataset of length equal to the number of cells (after QC filtering), containing the x-coordinates for each cell.
 - `y`: a float dataset of length equal to the number of cells (after QC filtering), containing the y-coordinates for each cell.
 
-### Group `kmeans_cluster` (optional)
+### Group `kmeans_cluster` 
 
 `parameters` will contain:
 
@@ -179,7 +179,7 @@ If k-means clustering was performed, `results` will contain:
 
 If k-means clustering was not performed, `results` will be empty.
 
-### Group `snn_graph_cluster` (optional)
+### Group `snn_graph_cluster`
 
 `parameters` will contain:
 
@@ -246,6 +246,28 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
   - `delta-detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
   - `cohen`: same as `lfc`, but for Cohen's d.
   - `auc`: same as `lfc`, but for the AUCs.
+
+### Group `cell_labelling`:
+
+> ⚠️  This group should be considered optional for back-compatibility purposes.
+
+`parameters` will contain:
+
+- `human_references`: a string dataset defining the human reference datasets used for labelling.
+  Each entry contains the name of a reference dataset, e.g., `"BlueprintEncode"`.
+- `mouse_references`: a string dataset defining the mouse reference datasets used for labelling.
+  Each entry contains the name of a reference dataset, e.g., `"ImmGen"`.
+
+`results` will contain:
+
+- `per_reference`: a group containing the label assignments for each cluster in each reference.
+  Each child is named after its corresponding reference, and is a string dataset of length equal to the number of clusters.
+  Entries of the dataset contain the assigned label for the corresponding cluster.
+
+For multiple references of the relevant species, `results` will also contain:
+
+- `integrated`: a string dataset of length equal to the number of clusters.
+  This specifies the reference with the top-scoring label for each cluster, after integrating the results of all per-reference classifications.
 
 ## Remaining bytes
 
