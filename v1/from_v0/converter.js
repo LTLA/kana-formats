@@ -348,6 +348,7 @@ export function convertFromVersion0(state, newfile) {
     // Marker detection.
     {
         let ghandle = fhandle.createGroup("marker_detection");
+        ghandle.createGroup("parameters");
 
         let chandle = ghandle.createGroup("results");
         let rhandle = chandle.createGroup("clusters");
@@ -362,7 +363,7 @@ export function convertFromVersion0(state, newfile) {
                 dhandle.write(y);
             }
 
-            for (const i of [ "lfc", "delta_detected", "auc", "cohen" ]) {
+            for (const i of [ "lfc", "delta-detected", "auc", "cohen" ]) {
                 let rankings = current[i];
                 let rhandle = ihandle.createGroup(i);
 

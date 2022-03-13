@@ -223,7 +223,7 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
     - `min`: a float dataset of length equal to the number of genes, containing the minimum log-fold change across all pairwise comparisons for each gene.
     - `mean`: a float dataset of length equal to the number of genes, containing the mean log-fold change across all pairwise comparisons for each gene.
     - `min-rank`: a float dataset of length equal to the number of genes, containing the minimum rank of the log-fold changes across all pairwise comparisons for each gene.
-  - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
+  - `delta-detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
   - `cohen`: same as `lfc`, but for Cohen's d.
   - `auc`: same as `lfc`, but for the AUCs.
 
@@ -243,7 +243,7 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
   - `means`: a float dataset of length equal to the number of genes, containing the mean expression of each gene in the selection.
   - `detected`: a float dataset of length equal to the number of genes, containing the proportion of cells with detected expression of each gene in the selection.
   - `lfc`: a float dataset of length equal to the number of genes, containing the log-fold change in the selection compared to all other cells.
-  - `delta_detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
+  - `delta-detected`: same as `lfc`, but for the delta-detected (i.e., difference in the percentage of detected expression).
   - `cohen`: same as `lfc`, but for Cohen's d.
   - `auc`: same as `lfc`, but for the AUCs.
 
