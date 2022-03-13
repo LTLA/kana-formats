@@ -227,7 +227,7 @@ Both may also be non-empty, in which case the appropriate clustering is chosen b
   - `cohen`: same as `lfc`, but for Cohen's d.
   - `auc`: same as `lfc`, but for the AUCs.
 
-### `custom_marker_management`
+### Group `custom_selection_markers`
 
 `parameters` will contain:
 

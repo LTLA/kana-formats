@@ -380,7 +380,7 @@ export function convertFromVersion0(state, newfile) {
 
     // Custom markers.
     {
-        let ghandle = fhandle.createGroup("custom_marker_management");
+        let ghandle = fhandle.createGroup("custom_selection_markers");
 
         let phandle = ghandle.createGroup("parameters");
         let shandle = phandle.createGroup("selections");
