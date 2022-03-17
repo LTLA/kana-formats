@@ -198,13 +198,13 @@ export function convertFromVersion0(state, newfile) {
         let contents = recoverTypedArrays(state.pca.contents);
 
         let ve = contents.var_exp;
-        let vhandle = phandle.createDataSet("var_exp", "Float64", [ve.length]);
+        let vhandle = chandle.createDataSet("var_exp", "Float64", [ve.length]);
         vhandle.write(ve);
 
         // Save as a matrix.
         let npcs = ve.length;
         let ncells = contents.pcs.length / npcs;
-        let pchandle = phandle.createDataSet("pcs", "Float64", [ncells, npcs]); // transposed in HDF5.
+        let pchandle = chandle.createDataSet("pcs", "Float64", [ncells, npcs]); // transposed in HDF5.
         pchandle.write(contents.pcs);
     }
 
