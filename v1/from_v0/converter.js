@@ -365,13 +365,14 @@ export function convertFromVersion0(state, newfile) {
                 dhandle.write(y);
             }
 
-            for (const i of [ "lfc", "delta-detected", "auc", "cohen" ]) {
+            for (const i of [ "lfc", "delta_detected", "auc", "cohen" ]) {
                 let rankings = current[i];
                 let rhandle = ihandle.createGroup(i);
 
                 for (const j of [ "min", "mean", "min-rank" ]) {
                     let y = rankings[j];
-                    let dhandle = rhandle.createDataSet(j, "Float64", [y.length]);
+                    let name = (j == "min-rank" ? "min_rank" : j);
+                    let dhandle = rhandle.createDataSet(name, "Float64", [y.length]);
                     dhandle.write(y);
                 }
             }
